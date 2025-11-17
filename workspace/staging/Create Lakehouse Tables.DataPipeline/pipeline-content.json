@@ -1,0 +1,176 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "DelimitedTextSource",
+            "formatSettings": {
+              "type": "DelimitedTextReadSettings"
+            },
+            "storeSettings": {
+              "type": "AzureBlobFSReadSettings",
+              "recursive": true,
+              "wildcardFolderPath": {
+                "value": "@pipeline().libraryVariables.adls_container_path",
+                "type": "Expression"
+              },
+              "wildcardFileName": "*.csv",
+              "enablePartitionDiscovery": false
+            },
+            "datasetSettings": {
+              "type": "DelimitedText",
+              "typeProperties": {
+                "location": {
+                  "type": "AzureBlobFSLocation",
+                  "fileSystem": {
+                    "value": "@pipeline().libraryVariables.adls_container_name",
+                    "type": "Expression"
+                  }
+                },
+                "columnDelimiter": ",",
+                "quoteChar": "\"",
+                "escapeChar": "\\",
+                "firstRowAsHeader": true
+              },
+              "schema": [],
+              "externalReferences": {
+                "connection": "@pipeline().libraryVariables.adls_connection_id"
+              },
+              "annotations": []
+            }
+          },
+          "sink": {
+            "type": "DelimitedTextSink",
+            "formatSettings": {
+              "type": "DelimitedTextWriteSettings",
+              "quoteAllText": true,
+              "fileExtension": ".txt"
+            },
+            "storeSettings": {
+              "type": "LakehouseWriteSettings"
+            },
+            "datasetSettings": {
+              "type": "DelimitedText",
+              "typeProperties": {
+                "location": {
+                  "type": "LakehouseLocation",
+                  "folderPath": "sales-data",
+                  "fileName": {
+                    "value": "@pipeline()?.TriggerEvent?.FileName",
+                    "type": "Expression"
+                  }
+                },
+                "columnDelimiter": ",",
+                "quoteChar": "\"",
+                "escapeChar": "\\",
+                "firstRowAsHeader": true
+              },
+              "schema": [],
+              "linkedService": {
+                "name": "0e4f74d6_6ed5_4cb2_a8fc_526d22b6f679",
+                "properties": {
+                  "type": "Lakehouse",
+                  "typeProperties": {
+                    "artifactId": "e5690d02-2134-8e41-4b2d-9fd817263643",
+                    "workspaceId": "00000000-0000-0000-0000-000000000000",
+                    "rootFolder": "Files"
+                  },
+                  "annotations": []
+                }
+              },
+              "annotations": []
+            }
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "typeConversion": true,
+            "typeConversionSettings": {
+              "allowDataTruncation": true,
+              "treatBooleanAsNumber": false
+            }
+          },
+          "enableStaging": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Copy sales data files to lakehouse",
+        "dependsOn": []
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "778b9b9c-b7e9-9898-41c7-3b8e34355bb6",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Run notebook Build Silver Layer",
+        "dependsOn": [
+          {
+            "activity": "Copy sales data files to lakehouse",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "9f105ae9-f460-8d0a-47dc-39db12e38cca",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Run notebook Build Gold Layer",
+        "dependsOn": [
+          {
+            "activity": "Run notebook Build Silver Layer",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ],
+    "libraryVariables": {
+      "adls_server": {
+        "type": "String",
+        "variableName": "adls_server",
+        "libraryName": "environment_settings"
+      },
+      "adls_container_name": {
+        "type": "String",
+        "variableName": "adls_container_name",
+        "libraryName": "environment_settings"
+      },
+      "adls_container_path": {
+        "type": "String",
+        "variableName": "adls_container_path",
+        "libraryName": "environment_settings"
+      },
+      "adls_connection_id": {
+        "type": "String",
+        "variableName": "adls_connection_id",
+        "libraryName": "environment_settings"
+      }
+    }
+  }
+}

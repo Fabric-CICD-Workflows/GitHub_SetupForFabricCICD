@@ -1,0 +1,30 @@
+find_replace:
+
+    # [Workspace Id]
+    - find_value: "3ecb5d93-d029-46d0-b6b2-95ca8f0e54c0" # [BettyWhite-dev]
+      replace_value:
+        TEST: "38ad26d6-7997-4a22-bd40-4203ed775dcd" # [BettyWhite-test]
+        PROD: "dac5971a-7560-43e5-9974-d0de71af2481" # [BettyWhite]
+
+    # [SQL Datasource Server]
+    - find_value: "4zzdkw4hunvuhp4ttpl5hvkkzm-sno4wprj2diennvssxfi6dsuya.datawarehouse.fabric.microsoft.com" # [BettyWhite-dev]
+      replace_value:
+        TEST: "4zzdkw4hunvuhp4ttpl5hvkkzm-2ytk2oexperevpkaiib62525zu.datawarehouse.fabric.microsoft.com" # [BettyWhite-test]
+        PROD: "4zzdkw4hunvuhp4ttpl5hvkkzm-dkl4lwtaoxsuhglu2dphdlzeqe.datawarehouse.fabric.microsoft.com" # [BettyWhite]
+      item_type: "SemanticModel"
+      item_name: ["Product Sales DirectLake Model"]
+
+    # [SQL Datasource Database]
+    - find_value: "35cc84dc-c08e-4555-8e0b-69f1d6608bbf" # [BettyWhite-dev]
+      replace_value:
+        TEST: "ceb4469d-4500-45f0-bfdd-c26339c77600" # [BettyWhite-test]
+        PROD: "101e1015-4dac-4e78-af41-ed3f5361157b" # [BettyWhite]
+      item_type: "SemanticModel"
+      item_name: ["Product Sales DirectLake Model"]
+
+    # [sales.Lakehouse]
+    - find_value: "17263643-9fd8-4b2d-8e41-2134e5690d02" # [BettyWhite-dev]
+      replace_value:
+        TEST: "0c181d6b-2e72-442b-b769-6809494bbf93" # [BettyWhite-test]
+        PROD: "3ce9135c-fdec-47f0-b451-ca041e0fbdd7" # [BettyWhite]
+
